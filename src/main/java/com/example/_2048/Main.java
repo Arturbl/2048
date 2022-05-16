@@ -1,6 +1,7 @@
 package com.example._2048;
 
 import com.example._2048.controller.KeyController;
+import com.example._2048.model.Node;
 import com.example._2048.model.Table;
 import com.example._2048.util.Colors;
 import com.example._2048.util.Sizing;

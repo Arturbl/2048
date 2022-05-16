@@ -66,11 +66,6 @@ public class Node extends StackPane {
         rectangle.setFill(newNode.rectangle.getFill());
     }
 
-    public void reset() {
-        setValue(0);
-        text.setText("");
-        rectangle.setFill(Colors.getColor(getValue()));
-    }
 
     // check if node is filled
     public boolean isEmpty() {
@@ -103,6 +98,14 @@ public class Node extends StackPane {
 
     public void setCol(int col) {
         this.col = col;
+    }
+
+    public Text getText() {
+        return text;
+    }
+
+    public Rectangle getRectangle() {
+        return rectangle;
     }
 
     @Override

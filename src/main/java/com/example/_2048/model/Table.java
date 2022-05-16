@@ -1,8 +1,10 @@
 package com.example._2048.model;
 
+import com.example._2048.util.Colors;
 import javafx.scene.Parent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 import java.util.LinkedList;
 import java.util.concurrent.ThreadLocalRandom;
@@ -23,6 +25,7 @@ public class Table extends Parent {
             }
             table.getChildren().add(col);
         }
+        generateNewBlock();
         generateNewBlock();
     }
 
@@ -53,6 +56,12 @@ public class Table extends Parent {
 
     public VBox getTable() {
         return table;
+    }
+
+    private void resetNode(Node node) {
+        node.text.setText("");
+        node.rectangle.setFill(Colors.getColor(0));
+        node.setValue(0);
     }
 
     public LinkedList<Node> getLine(int lineIndex) {
@@ -94,36 +103,30 @@ public class Table extends Parent {
 
     // isColumn, true if current method is calculation a column else false
     // index, colNumber is isColumn else lineNumber
-    private LinkedList<Node> updateGUI(LinkedList<Node> nodes, boolean isColumn, int index) {
+    private void updateGUI(LinkedList<Node> nodes, boolean isColumn, int index) {
+        LinkedList<Node> updatedNodes = new LinkedList<>(); // prevent updating the same node twice
         int line = 0;
         int col = 0;
         for(int idx = 0; idx < nodes.size(); idx++) {
-            Node node = nodes.get(idx);
-            Node tableNode;
-            if(isColumn) {
-                tableNode = getNode(line, index);
-                line++; // the only variable that changes is the line, the col remains the same
-            } else {
-                tableNode = getNode(index, col);
-                col++;
-            }
-//            System.out.println("node" + node);
-            if( tableNode.isEmpty() && !node.isEmpty() ) {
-                tableNode.replace(node);
-                node.reset();
-                nodes.set(idx, tableNode);
+            Node node = nodes.get(idx); // copy node present in auxiliary LinkedList nodes
+            Node tableNode = isColumn ? getNode(line, index) : getNode(index, col); // node in matrix, original node referenfce in memory
+//            System.out.println(node);
+            if( tableNode.isEmpty() && !node.isEmpty() && !updatedNodes.contains(tableNode)) {
+//                System.out.println("    node to be reseted: " + node);
 //                System.out.println("    tablenode: " + tableNode);
+                tableNode.replace(node);
+                updatedNodes.add(tableNode);
+                resetNode(getNode(node.getLine(), node.getCol())); // we have to reset the node on the table reference memory
             }
+            line++;
+            col++;
         }
-        return nodes;
     }
 
     public void moveUp() {
         for(int col = 0; col < COLS; col++) {
             LinkedList<Node> orderedColumn =  iterateArray( getCol(col));
-            LinkedList<Node> nodes = updateGUI(orderedColumn, true, col);
-            nodes.forEach(System.out::println);
-            System.out.println("\n");
+            updateGUI(orderedColumn, true, col);
         }
     }
 
@@ -134,9 +137,7 @@ public class Table extends Parent {
     public void moveLeft() {
         for(int line = 0; line < LINES; line++) {
             LinkedList<Node> orderedLine =  iterateArray( getLine(line));
-            LinkedList<Node> nodes = updateGUI(orderedLine, false, line);
-            nodes.forEach(System.out::println);
-            System.out.println("\n");
+            updateGUI(orderedLine, false, line);
         }
     }
 
@@ -144,7 +145,7 @@ public class Table extends Parent {
         for (int i = 0; i < LINES; i++) {
             LinkedList<Node> line = new LinkedList<>();
             for (int j = 0; j < COLS; j++) {
-                Node node = new Node(i, j, this);
+                Node node = getNode(i, j);
                 line.add(node);
             }
             line.forEach(System.out::println);
