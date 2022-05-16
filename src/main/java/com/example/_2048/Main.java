@@ -6,9 +6,6 @@ import com.example._2048.util.Colors;
 import com.example._2048.util.Sizing;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;

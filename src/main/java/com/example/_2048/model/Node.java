@@ -26,26 +26,38 @@ public class Node extends StackPane {
 
         // initialize node GUI
         text = new Text();
-        rectangle = new Rectangle();
-        rectangle.setStyle("-fx-stroke: black; -fx-stroke-width: 0.5;");
-        rectangle.setFill(Color.LIGHTGREY);
-        rectangle.setWidth( Sizing.getWindowWidth() / 4);
-        rectangle.setHeight( Sizing.getWindowHeight() / 4);
+        rectangle = initRectangle();
         this.getChildren().addAll(rectangle, text);
     }
 
+    private Rectangle initRectangle() {
+        Rectangle rect = new Rectangle();
+        rect.setStyle("-fx-stroke: black; -fx-stroke-width: 0.5;");
+        rect.setFill(Color.LIGHTGREY);
+        rect.setWidth(Sizing.getWindowWidth() / 4);
+        rect.setHeight(Sizing.getWindowHeight() / 4);
+        return rect;
+    }
+
     public void incrementValue() {
-        value = (value == 0 ? 2 : value * 2);
+        value = value == 0 ? 2 : value * 2;
         text.setText(Integer.toString(value));
     }
 
     public void paint() {
-        incrementValue();
         Paint color = Colors.getColor(value);
         text.setText(Integer.toString(value));
         rectangle.setFill(color);
     }
 
+    // create another memory reference to switch nodes in movements (table.iterateArray() method)
+    public Node copy() {
+        Node node = new Node(line, col, table);
+        node.value = value;
+        node.text = text;
+        node.rectangle = rectangle;
+        return node;
+    }
 
     // check if node is filled
     public boolean isEmpty() {
@@ -53,7 +65,7 @@ public class Node extends StackPane {
     }
 
     public boolean isEqual(Node node) {
-        return value == node.getValue() && value != 0;
+        return value == node.getValue();
     }
 
     public int getValue() {
@@ -68,14 +80,21 @@ public class Node extends StackPane {
         return line;
     }
 
+    public void setLine(int line) {
+        this.line = line;
+    }
+
     public int getCol() {
         return col;
     }
 
-    @Override
-    public String toString() {
-        return "Node{" + "line=" + line + ", col=" + col + '}';
+    public void setCol(int col) {
+        this.col = col;
     }
 
+    @Override
+    public String toString() {
+        return "Node{" + "line=" + line + ", col=" + col + "; value: " + value + '}';
+    }
 
 }
