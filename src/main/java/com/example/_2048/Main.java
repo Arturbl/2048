@@ -19,13 +19,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-
         Table table = new Table();
-
         Scene scene = new Scene(table.getTable(), Sizing.getWindowWidth(), Sizing.getWindowHeight());
-
         scene.setOnKeyPressed( new KeyController(table) );
-
         stage.setTitle("2048");
         stage.setResizable(false);
         stage.setScene(scene);

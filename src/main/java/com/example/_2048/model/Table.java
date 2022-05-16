@@ -105,12 +105,13 @@ public class Table extends Parent {
                 tableNode = getNode(index, col);
                 col++;
             }
-            System.out.println("node" + node);
+//            System.out.println("node" + node);
             if( tableNode.isEmpty() && !node.isEmpty() ) {
-                // criar um metodo em node para settar novos atributos de node
-                tableNode.text.setText(Integer.toString(node.getValue()));
-                System.out.println("    tablenode: " + tableNode);
+                tableNode.replace(node);
+                node.reset();
+//                System.out.println("    tablenode: " + tableNode);
             }
+//            node = tableNode;
         }
         return nodes;
     }
@@ -118,10 +119,7 @@ public class Table extends Parent {
     public void moveUp() {
         for(int col = 0; col < COLS; col++) {
             LinkedList<Node> orderedColumn =  iterateArray( getCol(col), true, col);
-//            orderedColumn.forEach(node -> {
-//                node.text.setText(node.getLine() + "," + node.getCol());
-//                System.out.println(node + ": " + node.getValue());
-//            });
+            orderedColumn.forEach(System.out::println);
             System.out.println("\n");
         }
     }
@@ -130,6 +128,12 @@ public class Table extends Parent {
 
     public void moveRight() {}
 
-    public void moveLeft() {}
+    public void moveLeft() {
+        for(int line = 0; line < LINES; line++) {
+            LinkedList<Node> orderedColumn =  iterateArray( getLine(line), false, line);
+            orderedColumn.forEach(System.out::println);
+            System.out.println("\n");
+        }
+    }
 
 }

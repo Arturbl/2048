@@ -26,6 +26,7 @@ public class Node extends StackPane {
 
         // initialize node GUI
         text = new Text();
+        text.setText("");
         rectangle = initRectangle();
         this.getChildren().addAll(rectangle, text);
     }
@@ -33,7 +34,7 @@ public class Node extends StackPane {
     private Rectangle initRectangle() {
         Rectangle rect = new Rectangle();
         rect.setStyle("-fx-stroke: black; -fx-stroke-width: 0.5;");
-        rect.setFill(Color.LIGHTGREY);
+        rect.setFill(Colors.getColor(value));
         rect.setWidth(Sizing.getWindowWidth() / 4);
         rect.setHeight(Sizing.getWindowHeight() / 4);
         return rect;
@@ -57,6 +58,18 @@ public class Node extends StackPane {
         node.text = text;
         node.rectangle = rectangle;
         return node;
+    }
+
+    public void replace(Node newNode) {
+        setValue(newNode.getValue());
+        text.setText(newNode.text.getText());
+        rectangle.setFill(newNode.rectangle.getFill());
+    }
+
+    public void reset() {
+        setValue(0);
+        text.setText(Integer.toString(getValue()));
+        rectangle.setFill(Colors.getColor(getValue()));
     }
 
     // check if node is filled
