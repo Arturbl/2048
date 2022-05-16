@@ -125,20 +125,38 @@ public class Table extends Parent {
 
     public void moveUp() {
         for(int col = 0; col < COLS; col++) {
-            LinkedList<Node> orderedColumn =  iterateArray( getCol(col));
+            LinkedList<Node> orderedColumn =  iterateArray( getCol(col) );
             updateGUI(orderedColumn, true, col);
         }
     }
 
-    public void moveDown() {}
-
-    public void moveRight() {}
+    public void moveDown() {
+        for(int col = 0; col < COLS; col++) {
+            LinkedList<Node> orderedColumn =  iterateArray( getCol(col) );
+            LinkedList<Node> reverseOrderedColumn = reverse(orderedColumn);
+            updateGUI(reverseOrderedColumn, true, col);
+        }
+    }
 
     public void moveLeft() {
         for(int line = 0; line < LINES; line++) {
             LinkedList<Node> orderedLine =  iterateArray( getLine(line));
             updateGUI(orderedLine, false, line);
         }
+    }
+
+    public void moveRight() {
+        for(int line = 0; line < LINES; line++) {
+            LinkedList<Node> orderedLine =  iterateArray( getLine(line));
+            LinkedList<Node> reversedOrderedLine = reverse(orderedLine);
+            updateGUI(reversedOrderedLine, false, line);
+        }
+    }
+
+    private LinkedList<Node> reverse(LinkedList<Node> linkedList) {
+        LinkedList<Node> reverse = new LinkedList<>();
+        linkedList.forEach(reverse::addFirst);
+        return reverse;
     }
 
     public void print() {
