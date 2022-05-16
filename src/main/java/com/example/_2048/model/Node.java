@@ -68,7 +68,7 @@ public class Node extends StackPane {
 
     public void reset() {
         setValue(0);
-        text.setText(Integer.toString(getValue()));
+        text.setText("");
         rectangle.setFill(Colors.getColor(getValue()));
     }
 

@@ -77,12 +77,8 @@ public class Table extends Parent {
         return column;
     }
 
-
     // iterate over column or lines to insert filled elements at first positions
-    // isColumn, true if current method is calculation a column else false
-    // index, colNumber is isColumn else lineNumber
-    public LinkedList<Node> iterateArray(LinkedList<Node> nodes, boolean isColumn, int index) {
-        // order nodes
+    private LinkedList<Node> iterateArray(LinkedList<Node> nodes) {
         for (int i = 0; i < nodes.size(); i++) {
             for (int j = 0; j < nodes.size() - i - 1; j++) {
                 if (nodes.get(j).isEmpty()) {
@@ -93,10 +89,16 @@ public class Table extends Parent {
                 }
             }
         }
-        // rearrange lines and cols
+        return nodes;
+    }
+
+    // isColumn, true if current method is calculation a column else false
+    // index, colNumber is isColumn else lineNumber
+    private LinkedList<Node> updateGUI(LinkedList<Node> nodes, boolean isColumn, int index) {
         int line = 0;
         int col = 0;
-        for(Node node : nodes) {
+        for(int idx = 0; idx < nodes.size(); idx++) {
+            Node node = nodes.get(idx);
             Node tableNode;
             if(isColumn) {
                 tableNode = getNode(line, index);
@@ -109,17 +111,18 @@ public class Table extends Parent {
             if( tableNode.isEmpty() && !node.isEmpty() ) {
                 tableNode.replace(node);
                 node.reset();
+                nodes.set(idx, tableNode);
 //                System.out.println("    tablenode: " + tableNode);
             }
-//            node = tableNode;
         }
         return nodes;
     }
 
     public void moveUp() {
         for(int col = 0; col < COLS; col++) {
-            LinkedList<Node> orderedColumn =  iterateArray( getCol(col), true, col);
-            orderedColumn.forEach(System.out::println);
+            LinkedList<Node> orderedColumn =  iterateArray( getCol(col));
+            LinkedList<Node> nodes = updateGUI(orderedColumn, true, col);
+            nodes.forEach(System.out::println);
             System.out.println("\n");
         }
     }
@@ -130,8 +133,21 @@ public class Table extends Parent {
 
     public void moveLeft() {
         for(int line = 0; line < LINES; line++) {
-            LinkedList<Node> orderedColumn =  iterateArray( getLine(line), false, line);
-            orderedColumn.forEach(System.out::println);
+            LinkedList<Node> orderedLine =  iterateArray( getLine(line));
+            LinkedList<Node> nodes = updateGUI(orderedLine, false, line);
+            nodes.forEach(System.out::println);
+            System.out.println("\n");
+        }
+    }
+
+    public void print() {
+        for (int i = 0; i < LINES; i++) {
+            LinkedList<Node> line = new LinkedList<>();
+            for (int j = 0; j < COLS; j++) {
+                Node node = new Node(i, j, this);
+                line.add(node);
+            }
+            line.forEach(System.out::println);
             System.out.println("\n");
         }
     }
