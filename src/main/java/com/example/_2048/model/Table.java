@@ -1,5 +1,6 @@
 package com.example._2048.model;
 
+import com.example._2048.controller.KeyController;
 import com.example._2048.util.Colors;
 import javafx.scene.Parent;
 import javafx.scene.layout.HBox;
@@ -41,12 +42,14 @@ public class Table extends Parent {
 
     public void generateNewBlock() {
         new Thread(() -> {
-            delay(250);
+            KeyController.updateCanMove();
+            delay(150);
             Node node = selectBlock();
             node.incrementValue();
             node.getRectangle().setFill(Color.LIGHTSALMON);
-            delay(250);
+            delay(150);
             node.paint();
+            KeyController.updateCanMove();
         }).start();
     }
 
@@ -55,7 +58,7 @@ public class Table extends Parent {
         int col = ThreadLocalRandom.current().nextInt(0, COLS);
         Node node = getNode(line, col);
         return node.getValue() == 0 ? node : selectBlock();
-    }
+}
 
     public Node getNode(int line, int col) {
         HBox hBox;
@@ -119,9 +122,16 @@ public class Table extends Parent {
     //TODO
     // pairIndex represents the index for every pair on column/line
     private LinkedList<Node> sumNodes(LinkedList<Node> nodes, int index) {
-
-        // IMPLEMENT METHOD
-
+        if(index + 1 < nodes.size()) {
+            Node currentNode = nodes.get(index);
+            Node nextNode = nodes.get(index++);
+            if(currentNode.isEqual(nextNode)) {
+                currentNode.incrementValue();
+                resetNode(nextNode);
+                return sumNodes(iterateArray(nodes), index);
+            }
+            return sumNodes(nodes, index);
+        }
         return nodes;
     }
 
