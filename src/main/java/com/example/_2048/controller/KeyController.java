@@ -35,7 +35,8 @@ public class KeyController implements EventHandler {
                 table.moveLeft();
             }
 
-//            table.generateNewBlock();
+
+            table.generateNewBlock();
             table.print();
 
         }

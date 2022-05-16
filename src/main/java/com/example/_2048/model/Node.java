@@ -3,7 +3,6 @@ package com.example._2048.model;
 import com.example._2048.util.Colors;
 import com.example._2048.util.Sizing;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -11,10 +10,10 @@ import javafx.scene.text.Text;
 public class Node extends StackPane {
 
     private final Table table; // entire matrix
-    private int line;
-    private int col;
-    Text text;  // represents the text inside each node
-    Rectangle rectangle; // represents the node background
+    private final int line;
+    private final int col;
+    private Text text;  // represents the text inside each node
+    private Rectangle rectangle; // represents the node background
 
     private int value; // represents the value inside each node (multiples of 2)
 
@@ -27,6 +26,7 @@ public class Node extends StackPane {
         // initialize node GUI
         text = new Text();
         text.setText("");
+        text.setStyle("-fx-font-size: 20;");
         rectangle = initRectangle();
         this.getChildren().addAll(rectangle, text);
     }
@@ -88,16 +88,8 @@ public class Node extends StackPane {
         return line;
     }
 
-    public void setLine(int line) {
-        this.line = line;
-    }
-
     public int getCol() {
         return col;
-    }
-
-    public void setCol(int col) {
-        this.col = col;
     }
 
     public Text getText() {

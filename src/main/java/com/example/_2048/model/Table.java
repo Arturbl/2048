@@ -14,6 +14,8 @@ public class Table extends Parent {
     private static final int LINES = 4;
     private static final int COLS = 4;
 
+    private int numPaintedNodes;
+
     private final VBox table = new VBox();
 
     public Table() {
@@ -29,10 +31,23 @@ public class Table extends Parent {
         generateNewBlock();
     }
 
+    private void delay(int delay) {
+        try {
+            Thread.sleep(delay);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void generateNewBlock() {
-        Node node = selectBlock();
-        node.incrementValue();
-        node.paint();
+        new Thread(() -> {
+            delay(250);
+            Node node = selectBlock();
+            node.incrementValue();
+            node.getRectangle().setFill(Color.LIGHTSALMON);
+            delay(250);
+            node.paint();
+        }).start();
     }
 
     private Node selectBlock() {
@@ -59,8 +74,8 @@ public class Table extends Parent {
     }
 
     private void resetNode(Node node) {
-        node.text.setText("");
-        node.rectangle.setFill(Colors.getColor(0));
+        node.getText().setText("");
+        node.getRectangle().setFill(Colors.getColor(0));
         node.setValue(0);
     }
 
@@ -101,6 +116,15 @@ public class Table extends Parent {
         return nodes;
     }
 
+    //TODO
+    // pairIndex represents the index for every pair on column/line
+    private LinkedList<Node> sumNodes(LinkedList<Node> nodes, int index) {
+
+        // IMPLEMENT METHOD
+
+        return nodes;
+    }
+
     // isColumn, true if current method is calculation a column else false
     // index, colNumber is isColumn else lineNumber
     private void updateGUI(LinkedList<Node> nodes, boolean isColumn, int index) {
@@ -110,12 +134,10 @@ public class Table extends Parent {
         for(int idx = 0; idx < nodes.size(); idx++) {
             Node node = nodes.get(idx); // copy node present in auxiliary LinkedList nodes
             Node tableNode = isColumn ? getNode(line, index) : getNode(index, col); // node in matrix, original node referenfce in memory
-//            System.out.println(node);
             if( tableNode.isEmpty() && !node.isEmpty() && !updatedNodes.contains(tableNode)) {
-//                System.out.println("    node to be reseted: " + node);
-//                System.out.println("    tablenode: " + tableNode);
                 tableNode.replace(node);
                 updatedNodes.add(tableNode);
+                // node != table.getNode() because of the memory reference
                 resetNode(getNode(node.getLine(), node.getCol())); // we have to reset the node on the table reference memory
             }
             line++;
@@ -140,14 +162,14 @@ public class Table extends Parent {
 
     public void moveLeft() {
         for(int line = 0; line < LINES; line++) {
-            LinkedList<Node> orderedLine =  iterateArray( getLine(line));
+            LinkedList<Node> orderedLine =  iterateArray( getLine(line) );
             updateGUI(orderedLine, false, line);
         }
     }
 
     public void moveRight() {
         for(int line = 0; line < LINES; line++) {
-            LinkedList<Node> orderedLine =  iterateArray( getLine(line));
+            LinkedList<Node> orderedLine =  iterateArray( getLine(line) );
             LinkedList<Node> reversedOrderedLine = reverse(orderedLine);
             updateGUI(reversedOrderedLine, false, line);
         }
