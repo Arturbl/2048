@@ -12,11 +12,11 @@ public class Colors {
     public static void initColors() {
         COLORS.put(0, Color.LIGHTGREY);
         COLORS.put(2, Color.WHITE);
-        COLORS.put(4, Color.LIGHTYELLOW);
+        COLORS.put(4, Color.LIGHTSALMON);
         COLORS.put(8, Color.ORANGERED);
         COLORS.put(16, Color.ORANGE);
-        COLORS.put(32, Color.LIGHTSALMON);
-        COLORS.put(64, Color.LIGHTSALMON);
+        COLORS.put(32, Color.LIGHTBLUE);
+        COLORS.put(64, Color.LIGHTSEAGREEN);
     }
 
 

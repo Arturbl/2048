@@ -43,6 +43,7 @@ public class Node extends StackPane {
     public void incrementValue() {
         value = value == 0 ? 2 : value * 2;
         text.setText(Integer.toString(value));
+        rectangle.setFill(Colors.getColor(value));
     }
 
     public void paint() {
@@ -63,7 +64,7 @@ public class Node extends StackPane {
     public void replace(Node newNode) {
         setValue(newNode.getValue());
         text.setText(newNode.text.getText());
-        rectangle.setFill(newNode.rectangle.getFill());
+        rectangle.setFill(Colors.getColor(getValue()));
     }
 
 

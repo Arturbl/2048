@@ -104,35 +104,42 @@ public class Table extends Parent {
         return column;
     }
 
-    // iterate over column or lines to insert filled elements at first positions
-    private LinkedList<Node> iterateArray(LinkedList<Node> nodes) {
-        for (int i = 0; i < nodes.size(); i++) {
-            for (int j = 0; j < nodes.size() - i - 1; j++) {
-                if (nodes.get(j).isEmpty()) {
-                    Node currentNode = nodes.get(j);
-                    Node nextNode = nodes.get(j + 1);
-                    nodes.set(j, nextNode);
-                    nodes.set(j + 1, currentNode);
+    private LinkedList<Node> sumNodes(LinkedList<Node> nodes, int index) {
+        if(index + 1 < nodes.size()) { // currentNode.isEmpty() if this happens, then the end of possible equals nodes has ended
+            Node currentNode = nodes.get(index);
+            if(!currentNode.isEmpty()) {
+                Node nextNode = nodes.get(index + 1);
+                if(currentNode.isEqual(nextNode)) {
+                    getNode(currentNode.getLine(), currentNode.getCol()).incrementValue();
+                    currentNode.incrementValue();
+                    resetNode(getNode(nextNode.getLine(), nextNode.getCol()));
+                    resetNode(nextNode);
+                    return sortArray(nodes);
                 }
+                return sumNodes(nodes, index + 1);
             }
+            return nodes;
         }
         return nodes;
     }
 
-    //TODO
-    // pairIndex represents the index for every pair on column/line
-    private LinkedList<Node> sumNodes(LinkedList<Node> nodes, int index) {
-        if(index + 1 < nodes.size()) {
-            Node currentNode = nodes.get(index);
-            Node nextNode = nodes.get(index++);
-            if(currentNode.isEqual(nextNode)) {
-                currentNode.incrementValue();
-                resetNode(nextNode);
-                return sumNodes(iterateArray(nodes), index);
+    // sort array over column or lines to insert filled elements at first positions
+    private LinkedList<Node> sortArray(LinkedList<Node> nodes) {
+        // ao dar sort, em vez de trocar posicoes, os nodes vazios devem passar para o final
+        for (int i = 0; i < nodes.size(); i++) {
+            for (int j = 0; j < nodes.size() - i - 1; j++) {
+                if (nodes.get(j).isEmpty()) {
+                    Node currentNode = nodes.get(j);
+                    nodes.remove(currentNode);
+                    nodes.addLast(currentNode);
+//                    Node nextNode = nodes.get(j + 1);
+//                    nodes.set(j, nextNode);
+//                    nodes.set(j + 1, currentNode);
+                }
             }
-            return sumNodes(nodes, index);
         }
-        return nodes;
+        return sumNodes(nodes, 0);
+//        return nodes;
     }
 
     // isColumn, true if current method is calculation a column else false
@@ -157,14 +164,14 @@ public class Table extends Parent {
 
     public void moveUp() {
         for(int col = 0; col < COLS; col++) {
-            LinkedList<Node> orderedColumn =  iterateArray( getCol(col) );
+            LinkedList<Node> orderedColumn =  sortArray( getCol(col) );
             updateGUI(orderedColumn, true, col);
         }
     }
 
     public void moveDown() {
         for(int col = 0; col < COLS; col++) {
-            LinkedList<Node> orderedColumn =  iterateArray( getCol(col) );
+            LinkedList<Node> orderedColumn =  sortArray( getCol(col) );
             LinkedList<Node> reverseOrderedColumn = reverse(orderedColumn);
             updateGUI(reverseOrderedColumn, true, col);
         }
@@ -172,14 +179,14 @@ public class Table extends Parent {
 
     public void moveLeft() {
         for(int line = 0; line < LINES; line++) {
-            LinkedList<Node> orderedLine =  iterateArray( getLine(line) );
+            LinkedList<Node> orderedLine =  sortArray( getLine(line) );
             updateGUI(orderedLine, false, line);
         }
     }
 
     public void moveRight() {
         for(int line = 0; line < LINES; line++) {
-            LinkedList<Node> orderedLine =  iterateArray( getLine(line) );
+            LinkedList<Node> orderedLine =  sortArray( getLine(line) );
             LinkedList<Node> reversedOrderedLine = reverse(orderedLine);
             updateGUI(reversedOrderedLine, false, line);
         }
