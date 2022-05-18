@@ -136,8 +136,7 @@ public class Table extends Parent {
                 }
             }
         }
-        return sumNodes(nodes, 0);
-//        return nodes;
+        return nodes;
     }
 
     // isColumn, true if current method is calculation a column else false
@@ -162,36 +161,42 @@ public class Table extends Parent {
     public void moveUp() {
         for(int col = 0; col < COLS; col++) {
             LinkedList<Node> orderedColumn =  sortArray( getCol(col) );
-            updateGUI(orderedColumn, true, col);
+            LinkedList<Node> finalColumn = sumNodes(orderedColumn, 0);
+            updateGUI(finalColumn, true, col);
         }
     }
 
     public void moveLeft() {
         for(int line = 0; line < LINES; line++) {
             LinkedList<Node> orderedLine =  sortArray( getLine(line) );
-            updateGUI(orderedLine, false, line);
+            LinkedList<Node> finalColumn = sumNodes(orderedLine, 0);
+            updateGUI(finalColumn, false, line);
         }
     }
 
     public void moveDown() {
         for(int col = 0; col < COLS; col++) {
             LinkedList<Node> orderedColumn =  sortArray( getCol(col) );
-            LinkedList<Node> reverseOrderedColumn = reverse(orderedColumn);
-            updateGUI(reverseOrderedColumn, true, col);
+            LinkedList<Node> finalColumn = reverse(sumNodes(orderedColumn, 0));
+            updateGUI(finalColumn, true, col);
         }
     }
 
     public void moveRight() {
         for(int line = 0; line < LINES; line++) {
             LinkedList<Node> orderedLine =  sortArray( getLine(line) );
-            LinkedList<Node> reversedOrderedLine = reverse(orderedLine);
-            updateGUI(reversedOrderedLine, false, line);
+            LinkedList<Node> finalColumn = sumNodes(orderedLine, 0);
+            updateGUI(finalColumn, false, line);
         }
     }
 
     private LinkedList<Node> reverse(LinkedList<Node> linkedList) {
         LinkedList<Node> reverse = new LinkedList<>();
-        linkedList.forEach(reverse::addFirst);
+        linkedList.forEach(node -> {
+            if(!node.isEmpty()) {
+                reverse.addLast(node);
+            }
+         });
         return reverse;
     }
 
