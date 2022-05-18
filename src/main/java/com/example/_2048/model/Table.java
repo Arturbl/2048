@@ -111,6 +111,7 @@ public class Table extends Parent {
                 Node nextNode = nodes.get(index + 1);
                 if(currentNode.isEqual(nextNode)) {
                     getNode(currentNode.getLine(), currentNode.getCol()).incrementValue();
+                    currentNode.incrementValue();
                     resetNode(getNode(nextNode.getLine(), nextNode.getCol()));
                     resetNode(nextNode);
                     return sortArray(nodes);
@@ -145,10 +146,9 @@ public class Table extends Parent {
         LinkedList<Node> updatedNodes = new LinkedList<>(); // prevent updating the same node twice
         int line = 0;
         int col = 0;
-        for(int idx = 0; idx < nodes.size(); idx++) {
-            Node node = nodes.get(idx); // copy node present in auxiliary LinkedList nodes
+        for (Node node : nodes) {
             Node tableNode = isColumn ? getNode(line, index) : getNode(index, col); // node in matrix, original node referenfce in memory
-            if( tableNode.isEmpty() && !node.isEmpty() && !updatedNodes.contains(tableNode)) {
+            if (tableNode.isEmpty() && !node.isEmpty() && !updatedNodes.contains(tableNode)) {
                 tableNode.replace(node);
                 updatedNodes.add(tableNode);
                 // node != table.getNode() because of the memory reference
