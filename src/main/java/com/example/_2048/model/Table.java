@@ -111,7 +111,6 @@ public class Table extends Parent {
                 Node nextNode = nodes.get(index + 1);
                 if(currentNode.isEqual(nextNode)) {
                     getNode(currentNode.getLine(), currentNode.getCol()).incrementValue();
-                    currentNode.incrementValue();
                     resetNode(getNode(nextNode.getLine(), nextNode.getCol()));
                     resetNode(nextNode);
                     return sortArray(nodes);
@@ -128,13 +127,11 @@ public class Table extends Parent {
         // ao dar sort, em vez de trocar posicoes, os nodes vazios devem passar para o final
         for (int i = 0; i < nodes.size(); i++) {
             for (int j = 0; j < nodes.size() - i - 1; j++) {
-                if (nodes.get(j).isEmpty()) {
-                    Node currentNode = nodes.get(j);
-                    nodes.remove(currentNode);
-                    nodes.addLast(currentNode);
-//                    Node nextNode = nodes.get(j + 1);
-//                    nodes.set(j, nextNode);
-//                    nodes.set(j + 1, currentNode);
+                Node currentNode = nodes.get(j);
+                if (currentNode.isEmpty()) {
+                    Node nextNode = nodes.get(j + 1);
+                    nodes.set(j, nextNode);
+                    nodes.set(j + 1, currentNode);
                 }
             }
         }
@@ -169,18 +166,18 @@ public class Table extends Parent {
         }
     }
 
+    public void moveLeft() {
+        for(int line = 0; line < LINES; line++) {
+            LinkedList<Node> orderedLine =  sortArray( getLine(line) );
+            updateGUI(orderedLine, false, line);
+        }
+    }
+
     public void moveDown() {
         for(int col = 0; col < COLS; col++) {
             LinkedList<Node> orderedColumn =  sortArray( getCol(col) );
             LinkedList<Node> reverseOrderedColumn = reverse(orderedColumn);
             updateGUI(reverseOrderedColumn, true, col);
-        }
-    }
-
-    public void moveLeft() {
-        for(int line = 0; line < LINES; line++) {
-            LinkedList<Node> orderedLine =  sortArray( getLine(line) );
-            updateGUI(orderedLine, false, line);
         }
     }
 
