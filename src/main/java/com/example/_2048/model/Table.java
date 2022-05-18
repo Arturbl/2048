@@ -123,23 +123,23 @@ public class Table extends Parent {
         return nodes;
     }
 
+    //TODO
     // sort array over column or lines to insert filled elements at first positions
     private LinkedList<Node> sortArray(LinkedList<Node> nodes) {
-        // ao dar sort, em vez de trocar posicoes, os nodes vazios devem passar para o final
-        for (int i = 0; i < nodes.size(); i++) {
-            for (int j = 0; j < nodes.size() - i - 1; j++) {
-                if (nodes.get(j).isEmpty()) {
-                    Node currentNode = nodes.get(j);
-                    nodes.remove(currentNode);
-                    nodes.addLast(currentNode);
-//                    Node nextNode = nodes.get(j + 1);
-//                    nodes.set(j, nextNode);
-//                    nodes.set(j + 1, currentNode);
-                }
+        LinkedList<Node> emptyNodes = new LinkedList<>();
+        LinkedList<Node> filledNodes = new LinkedList<>();
+        for(int index = 0; index < nodes.size(); index++) {
+            Node node = nodes.get(index);
+            if(node.isEmpty()) {
+                emptyNodes.addLast(node);
+            } else {
+                filledNodes.addLast(node);
             }
         }
-        return sumNodes(nodes, 0);
-//        return nodes;
+        for (Node emptyNode : emptyNodes) {
+            filledNodes.addLast(emptyNode);
+        }
+        return sumNodes(filledNodes, 0);
     }
 
     // isColumn, true if current method is calculation a column else false
@@ -148,10 +148,10 @@ public class Table extends Parent {
         LinkedList<Node> updatedNodes = new LinkedList<>(); // prevent updating the same node twice
         int line = 0;
         int col = 0;
-        for(int idx = 0; idx < nodes.size(); idx++) {
-            Node node = nodes.get(idx); // copy node present in auxiliary LinkedList nodes
+        // copy node present in auxiliary LinkedList nodes
+        for (Node node : nodes) {
             Node tableNode = isColumn ? getNode(line, index) : getNode(index, col); // node in matrix, original node referenfce in memory
-            if( tableNode.isEmpty() && !node.isEmpty() && !updatedNodes.contains(tableNode)) {
+            if (tableNode.isEmpty() && !node.isEmpty() && !updatedNodes.contains(tableNode)) {
                 tableNode.replace(node);
                 updatedNodes.add(tableNode);
                 // node != table.getNode() because of the memory reference
@@ -171,7 +171,7 @@ public class Table extends Parent {
 
     public void moveDown() {
         for(int col = 0; col < COLS; col++) {
-            LinkedList<Node> orderedColumn =  sortArray( getCol(col) );
+            LinkedList<Node> orderedColumn =  sortArray( getCol(col));
             LinkedList<Node> reverseOrderedColumn = reverse(orderedColumn);
             updateGUI(reverseOrderedColumn, true, col);
         }

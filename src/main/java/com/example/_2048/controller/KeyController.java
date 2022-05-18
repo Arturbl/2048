@@ -43,7 +43,7 @@ public class KeyController implements EventHandler {
             }
 
             table.generateNewBlock();
-            table.print();
+//            table.print();
         }
     }
 
