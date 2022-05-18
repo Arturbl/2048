@@ -51,6 +51,7 @@ public class Table extends Parent {
             node.paint();
             KeyController.updateCanMove();
         }).start();
+//        print();
     }
 
     private Node selectBlock() {
@@ -96,36 +97,30 @@ public class Table extends Parent {
     public LinkedList<Node> getCol(int colIndex) {
         LinkedList<Node> column = new LinkedList<>();
         for (int l = 0; l < LINES; l++) {
-            // if the node has the same memory reference as the helper array, at the time of the switch, the node will be updated twice
-            // call Node.copy() to create a new memory reference
             Node node = getNode(l, colIndex).copy();
             column.addLast(node);
         }
         return column;
     }
 
-    private LinkedList<Node> sumNodes(LinkedList<Node> nodes, int index) {
+    private LinkedList<Node> sumNodes(LinkedList<Node> nodes, int index, boolean reverse) {
         if(index + 1 < nodes.size()) { // currentNode.isEmpty() if this happens, then the end of possible equals nodes has ended
             Node currentNode = nodes.get(index);
-            if(!currentNode.isEmpty()) {
-                Node nextNode = nodes.get(index + 1);
-                if(currentNode.isEqual(nextNode)) {
-                    getNode(currentNode.getLine(), currentNode.getCol()).incrementValue();
-                    currentNode.incrementValue();
-                    resetNode(getNode(nextNode.getLine(), nextNode.getCol()));
-                    resetNode(nextNode);
-                    return sortArray(nodes);
-                }
-                return sumNodes(nodes, index + 1);
+            Node nextNode = nodes.get(index + 1);
+            if( !currentNode.isEmpty() && !nextNode.isEmpty() && currentNode.isEqual(nextNode) ) {
+                currentNode.incrementValue();
+                getNode(currentNode.getLine(), currentNode.getCol()).incrementValue();
+                resetNode(getNode(nextNode.getLine(), nextNode.getCol()));
+                resetNode(nextNode);
+                return reverse ? reverseArray(sortArray(nodes)) : sortArray(nodes);
             }
-            return nodes;
+            return sumNodes(nodes, index + 1, reverse);
         }
         return nodes;
     }
 
     // sort array over column or lines to insert filled elements at first positions
     private LinkedList<Node> sortArray(LinkedList<Node> nodes) {
-        // ao dar sort, em vez de trocar posicoes, os nodes vazios devem passar para o final
         for (int i = 0; i < nodes.size(); i++) {
             for (int j = 0; j < nodes.size() - i - 1; j++) {
                 Node currentNode = nodes.get(j);
@@ -133,6 +128,20 @@ public class Table extends Parent {
                     Node nextNode = nodes.get(j + 1);
                     nodes.set(j, nextNode);
                     nodes.set(j + 1, currentNode);
+                }
+            }
+        }
+        return nodes;
+    }
+
+    private LinkedList<Node> reverseArray(LinkedList<Node> nodes) {
+        for (int i = nodes.size() - 1; i > 0; i--) {
+            for (int j = nodes.size() - i; j > 0; j--) {
+                Node currentNode = nodes.get(j);
+                if(currentNode.isEmpty()) {
+                    Node previousNode = nodes.get(j - 1);
+                    nodes.set(j, previousNode);
+                    nodes.set(j - 1, currentNode);
                 }
             }
         }
@@ -151,6 +160,7 @@ public class Table extends Parent {
                 tableNode.replace(node);
                 updatedNodes.add(tableNode);
                 // node != table.getNode() because of the memory reference
+                resetNode(node);
                 resetNode(getNode(node.getLine(), node.getCol())); // we have to reset the node on the table reference memory
             }
             line++;
@@ -161,7 +171,7 @@ public class Table extends Parent {
     public void moveUp() {
         for(int col = 0; col < COLS; col++) {
             LinkedList<Node> orderedColumn =  sortArray( getCol(col) );
-            LinkedList<Node> finalColumn = sumNodes(orderedColumn, 0);
+            LinkedList<Node> finalColumn = sumNodes(orderedColumn, 0, false);
             updateGUI(finalColumn, true, col);
         }
     }
@@ -169,35 +179,25 @@ public class Table extends Parent {
     public void moveLeft() {
         for(int line = 0; line < LINES; line++) {
             LinkedList<Node> orderedLine =  sortArray( getLine(line) );
-            LinkedList<Node> finalColumn = sumNodes(orderedLine, 0);
-            updateGUI(finalColumn, false, line);
+            LinkedList<Node> finalLine = sumNodes(orderedLine, 0, false);
+            updateGUI(finalLine, false, line);
         }
     }
 
     public void moveDown() {
         for(int col = 0; col < COLS; col++) {
-            LinkedList<Node> orderedColumn =  sortArray( getCol(col) );
-            LinkedList<Node> finalColumn = reverse(sumNodes(orderedColumn, 0));
+            LinkedList<Node> orderedColumn =  reverseArray( getCol(col) );
+            LinkedList<Node> finalColumn = sumNodes(orderedColumn, 0, true);
             updateGUI(finalColumn, true, col);
         }
     }
 
     public void moveRight() {
         for(int line = 0; line < LINES; line++) {
-            LinkedList<Node> orderedLine =  sortArray( getLine(line) );
-            LinkedList<Node> finalColumn = sumNodes(orderedLine, 0);
+            LinkedList<Node> orderedLine =  reverseArray( getLine(line) );
+            LinkedList<Node> finalColumn = sumNodes(orderedLine, 0, true);
             updateGUI(finalColumn, false, line);
         }
-    }
-
-    private LinkedList<Node> reverse(LinkedList<Node> linkedList) {
-        LinkedList<Node> reverse = new LinkedList<>();
-        linkedList.forEach(node -> {
-            if(!node.isEmpty()) {
-                reverse.addLast(node);
-            }
-         });
-        return reverse;
     }
 
     public void print() {
@@ -211,5 +211,4 @@ public class Table extends Parent {
             System.out.println("\n");
         }
     }
-
 }
