@@ -52,15 +52,6 @@ public class Node extends StackPane {
         rectangle.setFill(color);
     }
 
-    // create another memory reference to switch nodes in movements (table.iterateArray() method)
-    public Node copy() {
-        Node node = new Node(line, col, table);
-        node.value = value;
-        node.text = text;
-        node.rectangle = rectangle;
-        return node;
-    }
-
     public void replace(Node newNode) {
         setValue(newNode.getValue());
         text.setText(newNode.text.getText());
@@ -84,6 +75,8 @@ public class Node extends StackPane {
     public void setValue(int value) {
         this.value = value;
     }
+
+
 
     public int getLine() {
         return line;

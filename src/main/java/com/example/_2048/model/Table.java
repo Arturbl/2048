@@ -50,16 +50,17 @@ public class Table extends Parent {
             delay(150);
             node.paint();
             KeyController.updateCanMove();
+            print();
         }).start();
-//        print();
     }
+
 
     private Node selectBlock() {
         int line = ThreadLocalRandom.current().nextInt(0, LINES);
         int col = ThreadLocalRandom.current().nextInt(0, COLS);
         Node node = getNode(line, col);
         return node.getValue() == 0 ? node : selectBlock();
-}
+    }
 
     public Node getNode(int line, int col) {
         HBox hBox;
@@ -88,7 +89,7 @@ public class Table extends Parent {
         for (int c = 0; c < COLS; c++) {
             // if the node has the same memory reference as the helper array, at the time of the switch, the node will be updated twice
             // call Node.copy() to create a new memory reference
-            Node node = getNode(lineIndex, c).copy();
+            Node node = getNode(lineIndex, c);
             line.addLast(node);
         }
         return line;
@@ -97,22 +98,20 @@ public class Table extends Parent {
     public LinkedList<Node> getCol(int colIndex) {
         LinkedList<Node> column = new LinkedList<>();
         for (int l = 0; l < LINES; l++) {
-            Node node = getNode(l, colIndex).copy();
+            Node node = getNode(l, colIndex);
             column.addLast(node);
         }
         return column;
     }
 
     private LinkedList<Node> sumNodes(LinkedList<Node> nodes, int index, boolean reverse) {
-        if(index + 1 < nodes.size()) { // currentNode.isEmpty() if this happens, then the end of possible equals nodes has ended
+        if (index + 1 < nodes.size()) {
             Node currentNode = nodes.get(index);
             Node nextNode = nodes.get(index + 1);
-            if( !currentNode.isEmpty() && !nextNode.isEmpty() && currentNode.isEqual(nextNode) ) {
+            if (!currentNode.isEmpty() && !nextNode.isEmpty() && currentNode.isEqual(nextNode)) {
                 currentNode.incrementValue();
-                getNode(currentNode.getLine(), currentNode.getCol()).incrementValue();
-                resetNode(getNode(nextNode.getLine(), nextNode.getCol()));
                 resetNode(nextNode);
-                return reverse ? reverseArray(sortArray(nodes)) : sortArray(nodes);
+                return reverse ? reverseArray(nodes) : sortArray(nodes);
             }
             return sumNodes(nodes, index + 1, reverse);
         }
@@ -126,8 +125,8 @@ public class Table extends Parent {
                 Node currentNode = nodes.get(j);
                 if (currentNode.isEmpty()) {
                     Node nextNode = nodes.get(j + 1);
-                    nodes.set(j, nextNode);
-                    nodes.set(j + 1, currentNode);
+                    currentNode.replace(nextNode);
+                    resetNode(nextNode);
                 }
             }
         }
@@ -138,65 +137,42 @@ public class Table extends Parent {
         for (int i = nodes.size() - 1; i > 0; i--) {
             for (int j = nodes.size() - i; j > 0; j--) {
                 Node currentNode = nodes.get(j);
-                if(currentNode.isEmpty()) {
+                if (currentNode.isEmpty()) {
                     Node previousNode = nodes.get(j - 1);
-                    nodes.set(j, previousNode);
-                    nodes.set(j - 1, currentNode);
+                    currentNode.replace(previousNode);
+                    resetNode(previousNode);
                 }
             }
         }
         return nodes;
     }
 
-    // isColumn, true if current method is calculation a column else false
-    // index, colNumber is isColumn else lineNumber
-    private void updateGUI(LinkedList<Node> nodes, boolean isColumn, int index) {
-        LinkedList<Node> updatedNodes = new LinkedList<>(); // prevent updating the same node twice
-        int line = 0;
-        int col = 0;
-        for (Node node : nodes) {
-            Node tableNode = isColumn ? getNode(line, index) : getNode(index, col); // node in matrix, original node referenfce in memory
-            if (tableNode.isEmpty() && !node.isEmpty() && !updatedNodes.contains(tableNode)) {
-                tableNode.replace(node);
-                updatedNodes.add(tableNode);
-                // node != table.getNode() because of the memory reference
-                resetNode(node);
-                resetNode(getNode(node.getLine(), node.getCol())); // we have to reset the node on the table reference memory
-            }
-            line++;
-            col++;
-        }
-    }
 
     public void moveUp() {
-        for(int col = 0; col < COLS; col++) {
-            LinkedList<Node> orderedColumn =  sortArray( getCol(col) );
-            LinkedList<Node> finalColumn = sumNodes(orderedColumn, 0, false);
-            updateGUI(finalColumn, true, col);
+        for (int col = 0; col < COLS; col++) {
+            LinkedList<Node> orderedColumn = sortArray(getCol(col));
+            sumNodes(orderedColumn, 0, false);
         }
     }
 
     public void moveLeft() {
-        for(int line = 0; line < LINES; line++) {
-            LinkedList<Node> orderedLine =  sortArray( getLine(line) );
-            LinkedList<Node> finalLine = sumNodes(orderedLine, 0, false);
-            updateGUI(finalLine, false, line);
+        for (int line = 0; line < LINES; line++) {
+            LinkedList<Node> orderedLine = sortArray(getLine(line));
+            sumNodes(orderedLine, 0, false);
         }
     }
 
     public void moveDown() {
-        for(int col = 0; col < COLS; col++) {
-            LinkedList<Node> orderedColumn =  reverseArray( getCol(col) );
-            LinkedList<Node> finalColumn = sumNodes(orderedColumn, 0, true);
-            updateGUI(finalColumn, true, col);
+        for (int col = 0; col < COLS; col++) {
+            LinkedList<Node> orderedColumn = reverseArray(getCol(col));
+            sumNodes(orderedColumn, 0, true);
         }
     }
 
     public void moveRight() {
-        for(int line = 0; line < LINES; line++) {
-            LinkedList<Node> orderedLine =  reverseArray( getLine(line) );
-            LinkedList<Node> finalColumn = sumNodes(orderedLine, 0, true);
-            updateGUI(finalColumn, false, line);
+        for (int line = 0; line < LINES; line++) {
+            LinkedList<Node> orderedLine = reverseArray(getLine(line));
+            sumNodes(orderedLine, 0, true);
         }
     }
 
