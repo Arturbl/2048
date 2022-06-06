@@ -87,8 +87,6 @@ public class Table extends Parent {
     public LinkedList<Node> getLine(int lineIndex) {
         LinkedList<Node> line = new LinkedList<>();
         for (int c = 0; c < COLS; c++) {
-            // if the node has the same memory reference as the helper array, at the time of the switch, the node will be updated twice
-            // call Node.copy() to create a new memory reference
             Node node = getNode(lineIndex, c);
             line.addLast(node);
         }
@@ -105,15 +103,22 @@ public class Table extends Parent {
     }
 
     private LinkedList<Node> sumNodes(LinkedList<Node> nodes, int index, boolean reverse) {
-        if (index + 1 < nodes.size()) {
+        boolean condition = reverse ? index - 1 >= 0 : index + 1 < nodes.size();
+        if (condition) {
             Node currentNode = nodes.get(index);
-            Node nextNode = nodes.get(index + 1);
+            int idx = reverse ? index - 1 : index + 1;
+            Node nextNode = nodes.get(idx);
             if (!currentNode.isEmpty() && !nextNode.isEmpty() && currentNode.isEqual(nextNode)) {
-                currentNode.incrementValue();
-                resetNode(nextNode);
+                if(reverse) {
+                    nextNode.incrementValue();
+                    resetNode(currentNode);
+                } else {
+                    currentNode.incrementValue();
+                    resetNode(nextNode);
+                }
                 return reverse ? reverseArray(nodes) : sortArray(nodes);
             }
-            return sumNodes(nodes, index + 1, reverse);
+            return sumNodes(nodes, idx, reverse);
         }
         return nodes;
     }
@@ -165,14 +170,14 @@ public class Table extends Parent {
     public void moveDown() {
         for (int col = 0; col < COLS; col++) {
             LinkedList<Node> orderedColumn = reverseArray(getCol(col));
-            sumNodes(orderedColumn, 0, true);
+            sumNodes(orderedColumn, orderedColumn.size() - 1, true);
         }
     }
 
     public void moveRight() {
         for (int line = 0; line < LINES; line++) {
             LinkedList<Node> orderedLine = reverseArray(getLine(line));
-            sumNodes(orderedLine, 0, true);
+            sumNodes(orderedLine, orderedLine.size() - 1, true);
         }
     }
 
