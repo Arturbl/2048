@@ -188,8 +188,8 @@ public class Table extends Parent {
                 Node node = getNode(i, j);
                 line.add(node);
             }
-            line.forEach(System.out::println);
-            System.out.println("\n");
+//            line.forEach(System.out::println);
+//            System.out.println("\n");
         }
     }
 }
