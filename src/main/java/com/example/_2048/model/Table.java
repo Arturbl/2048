@@ -1,6 +1,5 @@
 package com.example._2048.model;
 
-import com.example._2048.controller.KeyController;
 import com.example._2048.util.Colors;
 import javafx.scene.Parent;
 import javafx.scene.layout.HBox;
@@ -14,8 +13,6 @@ public class Table extends Parent {
 
     private static final int LINES = 4;
     private static final int COLS = 4;
-
-    private int numPaintedNodes;
 
     private final VBox table = new VBox();
 
@@ -42,14 +39,12 @@ public class Table extends Parent {
 
     public void generateNewBlock() {
         new Thread(() -> {
-            KeyController.updateCanMove();
             delay(150);
             Node node = selectBlock();
             node.incrementValue();
             node.getRectangle().setFill(Color.LIGHTSALMON);
             delay(150);
             node.paint();
-            KeyController.updateCanMove();
             print();
         }).start();
     }
