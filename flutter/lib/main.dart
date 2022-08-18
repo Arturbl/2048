@@ -30,12 +30,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
-  Controller controller = Controller();
-  late Socket socket;
-
+  
   Future<void> sendMessage(String message) async {
-    await controller.connect().then((sock) {
+    await Controller.connect().then((sock) {
       sock.add(utf8.encode(message));
       sock.close();
     });

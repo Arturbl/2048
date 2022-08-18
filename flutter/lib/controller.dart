@@ -6,10 +6,8 @@ import 'dart:typed_data';
 
 class Controller {
 
-  late Socket socket;
-
-  Future<Socket> connect() async  {
-    socket = await Socket.connect('192.168.1.64', 8000);
+  static  Future<Socket> connect() async  {
+    Socket socket = await Socket.connect('192.168.1.64', 8000);
     socket.listen((Uint8List data) {
       final serverResponse = String.fromCharCodes(data);
         print("Server: " + serverResponse);
@@ -24,11 +22,6 @@ class Controller {
       },
     );
     return socket;
-  }
-
-  Future<void> sendMessage(String message) async {
-    socket.write(message);
-    await Future.delayed(Duration(seconds: 2));
   }
 
 }
