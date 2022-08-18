@@ -9,6 +9,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -19,45 +22,53 @@ public class Server extends Thread {
     private  ServerSocket serverSocket ;
     private  Socket clientSocket ;
     private  BufferedReader in;
-    private  PrintWriter out;
 
     public Server(Table table) {
         this.table = table;
         try {
-            serverSocket = new ServerSocket(9999);
-            System.out.println("Server running on ip: " + serverSocket.toString());
-            clientSocket = serverSocket.accept();
-            out = new PrintWriter(clientSocket.getOutputStream());
-            in = new BufferedReader (new InputStreamReader(clientSocket.getInputStream()));
-        } catch (IOException e) {
+            serverSocket = new ServerSocket(8000);
+            System.out.println("Server running on ip: " + serverSocket.getLocalSocketAddress());
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     @Override
-    public void run(){
-        System.out.println("Server is running on port: 5000");
+    public void run() {
+        while(true) {
+            try {
+                clientSocket = serverSocket.accept();
+                in = new BufferedReader (new InputStreamReader(clientSocket.getInputStream()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            connectToClient();
+        }
+    }
+
+    public void connectToClient(){
         Thread clientThread = new Thread(new Runnable() {
             String msg ;
             @Override
             public void run() {
+//                System.out.println("Connected with " + clientSocket.getLocalAddress());
                 try {
                     msg = in.readLine();
                     while(msg!=null){
                         System.out.println(msg);
-                        Platform.runLater(() -> {
-                            if(Objects.equals(msg, "up")) table.moveUp();
-                            if(Objects.equals(msg, "down")) table.moveDown();
-                            if(Objects.equals(msg, "right")) table.moveRight();
-                            if(Objects.equals(msg, "left")) table.moveLeft();
-                            table.generateNewBlock();
-                        });
+                        if(msg.contains("up")) Platform.runLater(() -> table.moveUp());
+                        if(msg.contains("down")) Platform.runLater(() -> table.moveDown());
+                        if(msg.contains("right")) Platform.runLater(() -> table.moveRight());
+                        if(msg.contains("left")) Platform.runLater(() -> table.moveLeft());
+                        List<String> commands = Arrays.asList("up", "down", "right", "left");
+                        if(commands.contains(msg)) Platform.runLater(() -> table.generateNewBlock());
                         msg = in.readLine();
                     }
-                    System.out.println("Connection lost");
-                    out.close();
+//                    System.out.println("Connection lost with " + clientSocket.getLocalAddress());
+//                    out.close();
                     clientSocket.close();
-                    serverSocket.close();
+//                    serverSocket.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
